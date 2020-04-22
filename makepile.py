@@ -143,7 +143,7 @@ def pyinstaller():
     Requires PyInstaller to be installed:
     pip install pyinstaller
     """
-    rst2html()
+    readme()
     main_source_file = os.path.normpath("spyonde/spyondemain.py")
     # root_name = os.path.split(main_source_file)[1]  # filename.py
     # root_name = os.path.splitext(root_name)[0]  # spyondemain
@@ -217,6 +217,7 @@ def test():
     """
     path = "tests/test_sample.py"
     cmd = "python " + os.path.normpath(path)
+    print(cmd)
     os.system(cmd)
 
 
@@ -226,6 +227,7 @@ def lint():
     """
     path = "tests/make_lint.py"
     cmd = "python " + os.path.normpath(path)
+    print(cmd)
     os.system(cmd)
 
 
@@ -235,16 +237,20 @@ def linecount():
     Requires:
     https://github.com/AlDanial/cloc
     """
-    os.system("cloc .")
+    cmd = "cloc ."
+    print(cmd)
+    os.system(cmd)
 
 
-def rst2html():
+def readme():
     r"""
     Converts README.rst to README.rst.html.
     Requires:
     https://pypi.org/project/rst2html5/
     """
-    os.system("rst2html5 README.rst > README.rst.html")
+    cmd = "rst2html5 README.rst > README.rst.html"
+    print(cmd)
+    os.system(cmd)
 
 
 # END TARGETs SECTION _________________________________________
@@ -297,7 +303,7 @@ else:
 target_found = False
 if target_candidate:
     if target_candidate in targets_in_module:
-        print("target:", target_candidate)
+        print("\n/// target:", target_candidate)
         function_call = target_candidate + "()"
         exec(function_call)  # pylint: disable=exec-used
         target_found = True

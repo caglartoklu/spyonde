@@ -308,7 +308,7 @@ Shows the main menu of makepile.py and possible targets.
 
     C:\projects1\spyonde>python makepile.py
     Possible targets:
-    ['clean', 'demo', 'install', 'linecount', 'lint', 'pyinstaller', 'rst2html', 'test', 'uninstall']
+    ['clean', 'demo', 'install', 'linecount', 'lint', 'pyinstaller', 'readme', 'test', 'uninstall']
 
     No target specified
     if you are on Windows, make sure you are running the script:
@@ -386,7 +386,7 @@ Requires:
 must be already installed.
 
 
-python makepile.py rst2html
+python makepile.py readme
 ------------------------------
 
 Converts the ``README.rst`` file to ``README.rst.html`` using `rst2html5 <https://pypi.org/project/rst2html5/>`_.
