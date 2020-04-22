@@ -228,7 +228,7 @@ FAQ
 - A: Currently, you can not. It will be added in upcoming versions.
 
 - **Q: Do I need Jupyter to use Spyonde?**
-- A: No, you do not. Jupyter may be useful if you want to see and work on generated .ipynb files. If you want, you can use `python-notebook-viewer <https://addons.mozilla.org/en-US/firefox/addon/python-notebook-viewer/>`_ which is a Firefox plugin lets you view/render python notebooks without running notebook server, by a simple drag and drop.
+- A: No, you do not. Jupyter may be useful if you want to see and work on generated .ipynb files. If you want, you can use `python-notebook-viewer <https://addons.mozilla.org/en-US/firefox/addon/python-notebook-viewer/>`_ which is a Firefox plugin that lets you view/render python notebooks on Firefox without running a notebook server.
 
 - **Q: Do I have to use Spyder to create a .py file?**
 - A: No, you do not. You can use any IDE or text editor, even Notepad if you like.
@@ -236,8 +236,6 @@ FAQ
 - **Q: How to pronounce Spyonde?**
 - A: As you like.
 
-- **Q: I want my code/presentation to be pylint compatible, what can I do?**
-- A: TODO: tips for code linting.
 
 
 Compatibility and Requirements
