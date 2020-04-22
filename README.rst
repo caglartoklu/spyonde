@@ -22,7 +22,7 @@ Spyonde allows using any IDE/editor to create Jupyter notebooks.
 
 My favorite editor is `Vim <https://www.vim.org/>`_, and I have been using it for a long time.
 Time to time, I also use `Spyder <https://www.spyder-ide.org/>`_.
-Spyder has a very useful `cell mode <https://docs.spyder-ide.org/editor.html>`_ feature,
+Spyder has a very useful `code cell <https://docs.spyder-ide.org/editor.html#defining-code-cells>`_ feature,
 and I had already created a Python code selection executor in Vim,
 called `pyin.vim <https://github.com/caglartoklu/pyin.vim>`_.
 
@@ -228,7 +228,7 @@ Here is the full contents ``of demo.py``:
 
 See the screenshot of the same file from Spyder.
 Notice how Spyder distinguishes the cells.
-Spyone simply uses the same cell mode syntax.
+Spyone simply uses the same `code cell syntax of Spyder <https://docs.spyder-ide.org/editor.html#defining-code-cells>`_.
 
 Note that each cell can be run separately by ``ctrl enter`` in Spyder.
 
