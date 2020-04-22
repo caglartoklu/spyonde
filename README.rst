@@ -26,34 +26,6 @@ Spyder has a very useful `code cell <https://docs.spyder-ide.org/editor.html#def
 and I had already created a Python code selection executor in Vim,
 called `pyin.vim <https://github.com/caglartoklu/pyin.vim>`_.
 
-.. image:: https://user-images.githubusercontent.com/2071639/79972273-5e4c9d80-849e-11ea-8478-75ff3ccf0e3d.gif
-
-
-The name "Spyonde"
-------------------
-
-::
-
-> There are only two hard things in Computer Science:
-> cache invalidation and naming things.
-
--- Phil Karlton
-
-I have checked the `Moons of Jupiter <https://en.wikipedia.org/wiki/Moons_of_Jupiter#List>`_ and I think I have found a suitable one in #76:
-`Sponde <https://en.wikipedia.org/wiki/Sponde>`_
-
-From Wikipedia:
-
-::
-
-> Sponde, also known as Jupiter XXXVI, is a natural satellite of Jupiter.
-> It was discovered by a team of astronomers from the University of Hawaii led by Scott S. Sheppard in 2001.
-> Sponde is about 2 kilometres in diameter.
-
-It seems that it is a nice fit for low-dependency utility.
-
-A little word-play on ``Sponde``, and we have ``Spyonde`` as in ``Jupyter`` and ``Spyder``.
-
 
 
 Installation
@@ -87,6 +59,10 @@ or, launch Spyonde with a command like this:
 ::
 
     C:\Python37\Scripts\spyonde.exe myfile.py
+
+See the following animated gif:
+
+.. image:: https://user-images.githubusercontent.com/2071639/79972273-5e4c9d80-849e-11ea-8478-75ff3ccf0e3d.gif
 
 
 Command Line Options
@@ -437,6 +413,33 @@ Related Projects
 - `nbconvert <https://github.com/jupyter/nbconvert>`_ : The nbconvert tool allows you to convert an .ipynb notebook file into various static formats including HTML, LaTeX, PDF, Markdown, reStructuredText and some others.
 - `pynb <https://github.com/elehcimd/pynb>`_ Jupyter notebooks as plain Python code with embedded Markdown text. The missions of pynb and Spyonde are very similar.
 - `python-notebook-viewer <https://addons.mozilla.org/en-US/firefox/addon/python-notebook-viewer/>`_ This Firefox plugin lets you view/render python notebooks without running notebook server, by a simple drag and drop.
+
+
+
+The name "Spyonde"
+------------------
+
+::
+
+> There are only two hard things in Computer Science:
+> cache invalidation and naming things.
+
+-- Phil Karlton
+
+I have checked the `Moons of Jupiter <https://en.wikipedia.org/wiki/Moons_of_Jupiter#List>`_ and I think I have found a suitable one in #76:
+`Sponde <https://en.wikipedia.org/wiki/Sponde>`_
+
+From Wikipedia:
+
+::
+
+> Sponde, also known as Jupiter XXXVI, is a natural satellite of Jupiter.
+> It was discovered by a team of astronomers from the University of Hawaii led by Scott S. Sheppard in 2001.
+> Sponde is about 2 kilometres in diameter.
+
+It seems that it is a nice fit for low-dependency utility.
+
+A little word-play on ``Sponde``, and we have ``Spyonde`` as in ``Jupyter`` and ``Spyder``.
 
 
 
