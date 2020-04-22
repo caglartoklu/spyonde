@@ -117,6 +117,9 @@ Here is the full contents ``of demo.py``:
     import os
     import sys
 
+    # spyonde:ignore-cell
+    # the line above means that, this cell will not be in the .ipynb file.
+
 
     # %% Welcome to Tiny Python Introduction
 
@@ -219,6 +222,17 @@ After running this command:
 ``demo.py.gen.ipynb`` file is created.
 
 .. image:: https://user-images.githubusercontent.com/2071639/79972635-f2b70000-849e-11ea-98e5-a7de1060ce18.png
+
+
+Ignoring Cells
+------------------------
+
+It is possible to ignore a cell by adding the following line in the ``.py`` file.
+Any cell including this comment will be skipped and not rendered into ``.ipynb`` file.
+
+::
+
+    # spyonde:ignore-cell
 
 
 FAQ

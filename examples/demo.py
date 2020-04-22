@@ -1,7 +1,31 @@
 # -*- coding: utf-8 -*-
 
+"""
+module doc
+"""
+
 import os
 import sys
+# import stuff as usual.
+
+# spyonde:ignore-cell
+# the line above means that, this cell will not be in the .ipynb file.
+
+# pylint: disable=C0103
+# Constant name doesn't conform to UPPER_CASE naming style (invalid-name)
+
+# pylint: disable=C0301
+# Line too long (105/100) (line-too-long)
+
+# pylint: disable=C0413
+# Import should be placed at the top of the module (wrong-import-position)
+
+# pylint: disable=C0412
+# Imports from package are not grouped (ungrouped-imports)
+
+# pylint: disable=W0404
+# Reimport (imported line 44) (reimported)
+
 
 
 # %% Welcome to Tiny Python Introduction

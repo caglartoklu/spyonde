@@ -358,6 +358,32 @@ def prepare_markdown_cell(cell):
     return cell2
 
 
+def cell_ignored(cell_lines):
+    """
+    Returns True if the cell is to be ignored, False otherwise.
+
+    The cell ignore string is as follows:
+
+    # spyonde:ignore-cell
+    """
+    assert isinstance(cell_lines, list)
+
+    if not hasattr(cell_ignored, "compiled_pattern"):
+        # it doesn't exist yet, so initialize it once.
+        cell_ignored.compiled_pattern = re.compile(r'\s*#*\s*spyonde\s*[:=]\s*ignore-cell\s*\Z')
+        # \s whitespace
+        # [:=] : or =
+        # \Z : end of string
+
+    result = False
+    for line in cell_lines:
+        if cell_ignored.compiled_pattern.match(line):
+            result = True
+            break
+
+    return result
+
+
 def align_comment_cells(cell_lines):
     """
     This is an idea to use multiline strings as comments, such as:
@@ -392,6 +418,8 @@ def parse_cells(cells):
 
     parsed_cells = []
     for cell in cells:
+        if cell_ignored(cell):
+            continue
         cell_type = detect_cell_type(cell)
         if cell_type == __CELL_TYPE_MARKDOWN:
             cell = prepare_markdown_cell(cell)
