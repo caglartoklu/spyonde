@@ -33,7 +33,7 @@ Installation
 
 ::
 
-    pip install spyonde
+    pip install git+https://github.com/caglartoklu/spyonde
 
 
 
