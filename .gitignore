@@ -64,4 +64,5 @@ make_clean.bat
 make_lint.bat
 make_test.bat
 trial/*
+examples/*.ipynb
 
