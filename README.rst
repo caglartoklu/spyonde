@@ -26,7 +26,7 @@ Spyder has a very useful `cell mode <https://docs.spyder-ide.org/editor.html>`_ 
 and I had already created a Python code selection executor in Vim,
 called `pyin.vim <https://github.com/caglartoklu/pyin.vim>`_.
 
-TODO: screenshot: spyonde_usage2.gif
+.. image:: https://user-images.githubusercontent.com/2071639/79972273-5e4c9d80-849e-11ea-8478-75ff3ccf0e3d.gif
 
 
 The name "Spyonde"
@@ -242,8 +242,7 @@ After running this command:
 
 ``demo.py.gen.ipynb`` file is created.
 
-TODO: screenshot cells_in_spyder.png
-
+.. image:: https://user-images.githubusercontent.com/2071639/79972635-f2b70000-849e-11ea-98e5-a7de1060ce18.png
 
 
 FAQ
@@ -285,13 +284,13 @@ Development has been made with Python 3.7.4 on Windows 10.
 
 Tested on Ubuntu 18.04 LTS on Windows 10 WSL with Python 3.6.9.
 
-# TODO: screenshot from Ubuntu
+.. image:: https://user-images.githubusercontent.com/2071639/79972299-69073280-849e-11ea-82fa-bfd3060f992d.png
 
 **Windows XP**
 
 Tested on Windows XP, Python 3.4.4.
 
-# TODO: screenshot from Windows XP
+.. image:: https://user-images.githubusercontent.com/2071639/79972305-6a385f80-849e-11ea-8901-c887de50d128.png
 
 
 **macOS**
@@ -420,8 +419,8 @@ To Do
 - ``[x]`` add makepile usage to Development section
 - ``[x]`` Test on Python 3.4.4 on Windows XP
 - ``[x]`` Test on Ubuntu 18.04 on Windows (WSL)
-- ``[ ]`` screenshots to README.rst
-- ``[ ]`` upload to Github
+- ``[x]`` screenshots to README.rst
+- ``[x]`` upload to Github
 - ``[ ]`` upload to pypi
 - ``[ ]`` more unit test coverage
 - ``[ ]`` recursively generate .ipynb files under a directory.
