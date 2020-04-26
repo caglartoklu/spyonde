@@ -394,6 +394,33 @@ def align_comment_cells(cell_lines):
     return cell_lines
 
 
+def remove_trailing_empty_elements(list1):
+    """
+    Returns a copy of a list without empty items from the end.
+    The empty items at the start of the list and between remain intact.
+    Example:
+        list2 = ["", "a", "b", "c", "\t", "d", "  ", ""]
+        list3 = remove_trailing_empty_elements(list2)
+        print(list3)
+        ['', 'a', 'b', 'c', '\t', 'd']
+    """
+    assert isinstance(list1, list)
+
+    list2 = list1[:]
+    indices_to_remove = []
+    for i in range(len(list1)-1, -1, -1):
+        line2 = list2[i].strip()
+        if line2 == "":
+            indices_to_remove.append(i)
+        else:
+            break
+
+    # print(indices_to_remove)
+    for i in indices_to_remove:
+        list2.pop(i)
+    return list2
+
+
 def parse_cells(cells):
     """
     Parses cells and builds a data to be written to a file.
@@ -423,6 +450,10 @@ def parse_cells(cells):
         cell_type = detect_cell_type(cell)
         if cell_type == __CELL_TYPE_MARKDOWN:
             cell = prepare_markdown_cell(cell)
+
+        if cell_type == __CELL_TYPE_CODE:
+            cell = remove_trailing_empty_elements(cell)
+
         parsed_cells.append((cell_type, cell))
 
     return parsed_cells
