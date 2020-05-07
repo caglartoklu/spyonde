@@ -178,6 +178,12 @@ def is_cell_separator(line2):
     """
     Returns True if the line is a cell separator, False otherwise.
 
+    is_cell_separator():
+        pattern: #%% and some comment
+    is_only_cell_separator():
+        pattern: #%% <and that's it, no comments>
+    Their only difference is the regular expression.
+
     :type line2: str
 
     __TOKEN_CELL_SEPS = ["#%%", "# %%", "# <codecell>"]
@@ -202,6 +208,46 @@ def is_cell_separator(line2):
     elif is_cell_separator.compiled_pattern.match(line2):
         # a more complex regex search.
         cell_separator_it_is = True
+    return cell_separator_it_is
+
+
+def is_only_cell_separator(line2):
+    """
+    Returns True if the line is a cell separator without comments, False otherwise.
+
+    is_cell_separator():
+        pattern: #%% and some comment
+    is_only_cell_separator():
+        pattern: #%% <and that's it, no comments>
+    Their only difference is the regular expression.
+
+    :type line2: str
+
+    __TOKEN_CELL_SEPS = ["#%%", "# %%", "# <codecell>"]
+    """
+
+    if not hasattr(is_only_cell_separator, "compiled_pattern1"):
+        # it doesn't exist yet, so initialize it once.
+        is_only_cell_separator.compiled_pattern1 = re.compile(r'\s*#\s*%%\s*\Z')
+        is_only_cell_separator.compiled_pattern2 = re.compile(r'\s*#\s*<codecell>\s*\Z')
+        # compile this pattern once, for performance reasons.
+        # note that Spyder does not exactly use this.
+        # it only allows one space after #.
+        # examples according to Spyder
+        # #%% valid cell separator
+        # # %% valid cell separator
+        # #  %% INvalid cell separator
+
+    assert isinstance(line2, str)
+
+    cell_separator_it_is = False
+    if is_only_cell_separator.compiled_pattern1.match(line2):
+        # a more complex regex search.
+        cell_separator_it_is = True
+    elif is_only_cell_separator.compiled_pattern2.match(line2):
+        # a more complex regex search.
+        cell_separator_it_is = True
+
     return cell_separator_it_is
 
 
@@ -394,6 +440,55 @@ def align_comment_cells(cell_lines):
     return cell_lines
 
 
+def remove_empty_cell_separator_leftovers(cell):
+    """
+    Returns a copy of a list without empty comments.
+
+    https://github.com/caglartoklu/spyonde/issues/3
+
+    cell is something like:
+    [
+        '# %%',
+        '# - this is a cell without a header.',
+        "# - that's it.",
+        '# - see the next slide.',
+        'print("hi")'
+    ]
+
+    Without this function;
+    A Python code like this:
+
+        # %%
+        # - this is a cell without a header.
+        # - that's it.
+        # - see the next slide.
+        print("hi")
+
+    produced a Jupyter code cell like this:
+        #
+        # - this is a cell without a header.
+        # - that's it.
+        # - see the next slide.
+        print("hi")
+    """
+    assert isinstance(cell, list)
+    if cell:
+        assert isinstance(cell[0], str)
+
+    last_index_to_remove = None
+    for i, line in enumerate(cell):
+        if is_only_cell_separator(line):
+            last_index_to_remove = i
+        else:
+            # we have hit the first non cell separator line.
+            break
+
+    if last_index_to_remove is not None:
+        cell = cell[last_index_to_remove+1:]
+
+    return cell
+
+
 def remove_trailing_empty_elements(list1):
     """
     Returns a copy of a list without empty items from the end.
@@ -405,6 +500,8 @@ def remove_trailing_empty_elements(list1):
         ['', 'a', 'b', 'c', '\t', 'd']
     """
     assert isinstance(list1, list)
+    if list1:
+        assert isinstance(list1[0], str)
 
     list2 = list1[:]
     indices_to_remove = []
@@ -514,6 +611,12 @@ def build_cell_dict(cell_data):
         dct_cell["execution_count"] = None
         dct_cell["metadata"] = {"scrolled": True, "slideshow": {"slide_type": "slide"}}
         dct_cell["outputs"] = []
+
+    lines = remove_empty_cell_separator_leftovers(lines)
+
+    # there will be no trailing left overs.
+    # if it would, they would be be starting a new cell.
+    # lines = remove_empty_cell_separator_leftovers(list(reversed(lines)))
 
     for line in lines:
         if is_comment(line.strip()):

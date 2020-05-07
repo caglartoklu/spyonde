@@ -47,6 +47,21 @@ import sys
 
 
 
+# %%
+# - this is a cell without a header.
+# - that's it.
+# - see the next slide.
+print("hi")
+
+
+
+# %% this is a cell with a header.
+# - that's it.
+# - see the next slide.
+print("hi")
+
+
+
 # %% String Definition
 
 # type inference
