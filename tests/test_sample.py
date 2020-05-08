@@ -80,5 +80,35 @@ class TestStartsWith(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+    def test_is_only_cell_separator(self):
+        """
+        Tests the is_only_cell_separator() method.
+        """
+
+        actual = spyondemain.is_only_cell_separator("#  %% ")
+        self.assertEqual(True, actual)
+
+        actual = spyondemain.is_only_cell_separator("#%%")
+        self.assertEqual(True, actual)
+
+        actual = spyondemain.is_only_cell_separator("# %%")
+        self.assertEqual(True, actual)
+
+        actual = spyondemain.is_only_cell_separator("# %% python strings")
+        self.assertEqual(False, actual)
+
+        actual = spyondemain.is_only_cell_separator("# %% python strings   ")
+        self.assertEqual(False, actual)
+
+        actual = spyondemain.is_only_cell_separator("#<codecell>")
+        self.assertEqual(True, actual)
+
+        actual = spyondemain.is_only_cell_separator("# <codecell>   ")
+        self.assertEqual(True, actual)
+
+        actual = spyondemain.is_only_cell_separator("# <codecell>  ppp ")
+        self.assertEqual(False, actual)
+
+
 if __name__ == '__main__':
     unittest.main()
