@@ -6,12 +6,12 @@ Converts cell separated regular Python scripts to Jupyter notebooks.
 With Spyonde, it is possible to use any IDE/editor to create Jupyter notebooks, presenatations and lecture notes.
 
 
-Why I created this?
+Purpose
 -------------------
 
 Using a presentation software such as Microsoft PowerPoint or LibreOffice/OpenOffice Impress contributes a lot to visualization, but they do not get along with code snippets.
 
-In this path, keeping the presentation technically correct is very hard since you can not *"run"* a presentation.
+While using such a software, keeping the presentation technically correct is very hard since you can not *"run"* a presentation.
 
 Jupyter is a nice presentation tool that can run code, but it is not an IDE/editor. It does not provide pylint/pycodestyle/PEP8 analysis and debugging features.
 For some small code snippets, this can be ignored, but for longer code bases, using IDE/editor is more useful.
@@ -35,24 +35,16 @@ Installation
 
     pip install git+https://github.com/caglartoklu/spyonde
 
+After installation, `pip` will create an executable (`spyonde`) for Spyonde.
 
-
-Usage
-=============================
-
-When installed, pip will create an executable for Spyonde.
 Spyonde then can be used from command line as follows:
 
 ::
 
     spyonde mypresentation.py
 
-This command will generate an ``mypresentation.py.gen.ipynb`` file, ready to be opened.
-
-Not to mess with ``.ipynb`` files owned by user, ``.gen.ipynb`` suffix is added.
-
-Note that, on Windows, ``C:\Python3x\Scripts`` directory is NOT automatically added to path.
-It is advised to add this directory to PATH variables.
+Note that, on Windows, ``C:\Python3x\Scripts`` directory is NOT automatically added to `PATH` variables.
+It is advised to add this directory to `PATH` variables.
 
 or, launch Spyonde with a command like this:
 
@@ -60,9 +52,32 @@ or, launch Spyonde with a command like this:
 
     C:\Python37\Scripts\spyonde.exe myfile.py
 
-See the following animated gif:
 
-.. image:: https://user-images.githubusercontent.com/2071639/79972273-5e4c9d80-849e-11ea-8478-75ff3ccf0e3d.gif
+Usage
+=============================
+
+**Step 1: Write a .py file as usual, in your favorite IDE/editor.**
+
+The screenshot below shows Spyder, but any IDE/editor can be used.
+
+Be sure to divide your cells using `code cell syntax of Spyder <https://docs.spyder-ide.org/editor.html#defining-code-cells>`_.
+Note that each cell can be run separately by ``ctrl enter`` in Spyder.
+
+.. image:: https://user-images.githubusercontent.com/2071639/81415430-1cd01980-9151-11ea-9795-3eba92d650c7.png
+
+**Step 2: Run Spyonde by the following command.**
+
+::
+
+    spyonde demo.py
+
+This command will generate the file ``demo.py.gen.ipynb``.
+
+.. image:: https://user-images.githubusercontent.com/2071639/81415443-2194cd80-9151-11ea-84ec-d6f515d75152.gif
+
+**Step 3: Your .ipynb file is ready. Simply open it.**
+
+.. image:: https://user-images.githubusercontent.com/2071639/81415461-25c0eb00-9151-11ea-8ca5-0fde2b036771.gif
 
 
 Command Line Options
@@ -107,121 +122,7 @@ If a cell has only comment lines and nothing else, it will be accepted as a Mark
 
 If not, it will be a code cell.
 
-Here is the full contents ``of demo.py``:
-
-::
-
-
-    # -*- coding: utf-8 -*-
-
-    import os
-    import sys
-
-    # spyonde:ignore-cell
-    # the line above means that, this cell will not be in the .ipynb file.
-
-
-    # %% Welcome to Tiny Python Introduction
-
-    # ## Python Language
-
-    # - As Wikipedia [says](https://en.wikipedia.org/wiki/Python_(programming_language)):
-    # - interpreted
-    # - high level
-    # - **type system**: `duck typing`, `dynamic`
-
-
-
-    #     %% Next Slide Will Be Great
-
-    # - This cell is expected to be in a separate cell.
-    # - And so it is.
-    # - Code is coming.
-
-
-
-    # %% String Definition
-
-    # type inference
-    s1 = "stuff"
-    s2 = 'another stuff'
-    # this will be an ordinary comment.
-
-
-
-    # %% Printing Strings
-
-    print(s1)
-    # we should also print the other.
-    print(s2)
-
-
-
-    # %% Printing Strings (2)
-
-    # - since this cell
-    # - has an line that is not a comment
-    # - it will be a code cell, not a markdown cell.
-    print("told you so.")
-
-
-
-    # %% Multi-line Strings
-
-    python_implementations = """
-    Some Python implementations are as follows:
-
-    Python (also known as CPython, the reference implementation)
-    PyPy
-    Jython
-    IronPython
-    """
-    print(python_implementations)
-
-
-
-    # %% A `for` loop Example
-
-    for a in range(10):
-        print(a)
-
-
-
-    # %% Some Languages for DOS
-
-    #- BASIC
-    #- Pascal
-    #- Python (yes, there _was_ a [Python for DOS](https://web.archive.org/web/20020804011430/http://www.python.org/ftp/python/wpy/dos.html))
-    #- C/C++
-    #- dBase (both a database and language)
-
-
-
-    # %% Image Handling in Spyonde
-
-    # - Image handling it directly passed to Markdown as-is.
-    # - The design and colors of Python.org [from 2005](https://web.archive.org/web/20050801073427/http://www.python.org/):
-    #
-    # ![](python_org_2005.png)
-
-
-See the screenshot of the same file from Spyder.
-Notice how Spyder distinguishes the cells.
-Spyone simply uses the same `code cell syntax of Spyder <https://docs.spyder-ide.org/editor.html#defining-code-cells>`_.
-
-Note that each cell can be run separately by ``ctrl enter`` in Spyder.
-
-
-After running this command:
-
-::
-
-    spyonde demo.py
-
-
-``demo.py.gen.ipynb`` file is created.
-
-.. image:: https://user-images.githubusercontent.com/2071639/79972635-f2b70000-849e-11ea-98e5-a7de1060ce18.png
+Full source code of ``demo.py`` is provided in ``examples`` folder.
 
 
 Ignoring Cells
