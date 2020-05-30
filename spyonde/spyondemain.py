@@ -663,7 +663,7 @@ def build_notebook_json(data, pyversion):
         cell_dict = build_cell_dict(cell_data)
         all_cells_list.append(cell_dict)
 
-    all_cells_as_json = json.dumps(all_cells_list)
+    all_cells_as_json = json.dumps(all_cells_list, indent=4)
 
     metadata = """
 ,
