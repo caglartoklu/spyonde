@@ -21,16 +21,21 @@ def get_list_of_py_files(topdir=None):
     """
     if topdir is None:
         topdir = os.path.dirname(os.path.abspath(__file__))
+
+        # go one upper dir:
+        topdir = os.path.abspath(os.path.join(topdir, ".."))
         # print(topdir)
 
     file_list = []
     for root, dirs, files in os.walk(topdir, topdown=False):  # pylint: disable=W0612
+        # W0612: unused-variable
         for name in files:
             full_file_path = os.path.join(root, name)
             if fnmatch.fnmatch(full_file_path, "*.py"):
                 if not fnmatch.fnmatch(full_file_path, "*.eggs*"):
-                    # ignore .py files in .eggs folders.
-                    file_list.append(full_file_path)
+                    if not fnmatch.fnmatch(full_file_path, "*.private*"):
+                        # ignore .py files in .eggs folders.
+                        file_list.append(full_file_path)
         # for name in dirs:
         #     print(os.path.join(root, name))
     # print(file_list)
@@ -75,7 +80,7 @@ def main():
     """
     file_list = get_list_of_py_files()
     apply_pylint(file_list=file_list)
-    apply_pep8(file_list=file_list)
+    # apply_pep8(file_list=file_list)
 
 
 if __name__ == "__main__":
