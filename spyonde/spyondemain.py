@@ -793,7 +793,7 @@ def main_trial():
     """
     module_path = os.path.dirname(os.path.realpath(__file__))
     input_file_path = os.path.join(module_path, "../")
-    input_file_path = os.path.join(input_file_path, "trial")
+    input_file_path = os.path.join(input_file_path, "examples")
     input_file_name = os.path.join(input_file_path, "demo.py")
 
     args_dict = {'output': None, 'pyversion': '3.8', 'overwrite_confirmed': False}
