@@ -11,7 +11,9 @@ import argparse
 import json
 import os
 import re
+import sys
 import tempfile
+import token
 import tokenize
 
 __TOKEN_CELL_SEPS = ["#%%", "# %%", "# <codecell>"]
@@ -228,11 +230,72 @@ def clean_cell_lines(cell_lines):
     return cell_lines
 
 
+def detect_encoding(token1):
+    """
+    If the token1 is an encoding token, it returns the encoding as a string.
+    Otherwise, it returns None.
+
+    Python 3.6:
+    TokenInfo(type=59 (ENCODING), string='utf-8', start=(0, 0), end=(0, 0), line='')
+    https://docs.python.org/3.6/library/token.html
+
+    Python 3.7:
+    TokenInfo(type=57 (ENCODING), string='utf-8', start=(0, 0), end=(0, 0), line='')
+    https://docs.python.org/3.7/library/token.html
+
+    Changed in version 3.7: Added COMMENT, NL and ENCODING tokens.
+
+    print(sys.version_info)
+    sys.version_info(major=3, minor=7, micro=4, releaselevel='final', serial=0)
+    """
+    assert isinstance(token1, tokenize.TokenInfo)
+
+    result = None
+
+    it_is_encoding_cell = False
+    py_version = sys.version_info
+    if py_version.major >= 3 and py_version.minor >= 7:
+        if token1.type == token.ENCODING:
+            it_is_encoding_cell = True
+    elif "type=59 (ENCODING)" in str(token1):
+        it_is_encoding_cell = True
+
+    if it_is_encoding_cell:
+        result = token1.string
+
+    return result
+
+
+def is_comment_token(token1):
+    """
+    Returns True if the token1 is a comment token, False otherwise.
+    Since there is an incompatibility between Python 3.6 and Python 3.7,
+    this function resolves it.
+    See more about the incompatibility here:
+    detect_encoding()
+    """
+    assert isinstance(token1, tokenize.TokenInfo)
+    result = False
+
+    py_version = sys.version_info
+    if py_version.major >= 3 and py_version.minor >= 7:
+        if token1.type == token.COMMENT:
+            result = True
+    else:
+        if "type=57 (COMMENT)" in str(token1):
+            result = True
+
+    return result
+
+
 def split_to_cells(input_file_name):
     """
     Tokenizes the contents of input_file_name.
 
     :type input_file_name: str
+
+    Token constants:
+    https://docs.python.org/3/library/token.html
 
     Returns a list of strings.
 
@@ -263,21 +326,21 @@ def split_to_cells(input_file_name):
         tokens = tokenize.tokenize(handle.readline)
 
         current_cell_tokens = []
-        for token in tokens:
+        for token1 in tokens:
 
-            token_str = token.string
-            token_line = token.line
+            token_str = token1.string
+            token_line = token1.line
 
-            if token.type == 57:
-                # print(list(tokens)[0])
-                # TokenInfo(type=57 (ENCODING), string='utf-8', start=(0, 0), end=(0, 0), line='')
+            detected_encoding_temp = detect_encoding(token1)
+            if detected_encoding_temp:
                 if detected_encoding is None:
-                    detected_encoding = token.string
+                    detected_encoding = detected_encoding_temp
+                    print("encoding set:", detected_encoding)
                 else:
                     raise ValueError("re-encountered an encoding.")
 
             it_is_cell_separator = False
-            if token.type == 55:  # means comment.
+            if is_comment_token(token1):
                 if is_cell_separator(token_line) and is_cell_separator(token_str):
                     it_is_cell_separator = True
 
@@ -290,9 +353,9 @@ def split_to_cells(input_file_name):
                 current_cell_lines = clean_cell_lines(current_cell_lines)
                 all_cell_lines.append(current_cell_lines)
 
-                current_cell_tokens = [token]
+                current_cell_tokens = [token1]
             else:
-                current_cell_tokens.append(token)
+                current_cell_tokens.append(token1)
 
         # this block caused an IndexError in Python's untokenize method, so I have left it out:
         # if current_cell_tokens:
