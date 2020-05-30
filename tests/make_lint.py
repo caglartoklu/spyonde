@@ -11,8 +11,9 @@ If you don't have them, install them by the following commands:
     pip install pylint pycodestyle
 """
 
-import os
 import fnmatch
+import os
+import sys
 
 
 def get_list_of_py_files(topdir=None):
@@ -79,8 +80,16 @@ def main():
     Entry point of the module.
     """
     file_list = get_list_of_py_files()
-    apply_pylint(file_list=file_list)
-    # apply_pep8(file_list=file_list)
+
+    pep8_used = False
+    if len(sys.argv) >= 2:
+        arg = sys.argv[1]
+        if arg in ["pep8", "pycodestyle"]:
+            apply_pep8(file_list=file_list)
+            pep8_used = True
+
+    if not pep8_used:
+        apply_pylint(file_list=file_list)
 
 
 if __name__ == "__main__":

@@ -223,9 +223,19 @@ def test():
 
 def lint():
     """
-    Applies linting to .py files in this project.
+    Applies pylint to .py files in this project.
     """
     path = "tests/make_lint.py"
+    cmd = "python " + os.path.normpath(path)
+    print(cmd)
+    os.system(cmd)
+
+
+def pep8():
+    """
+    Applies PEP8/pycodestyle to .py files in this project.
+    """
+    path = "tests/make_lint.py pep8"
     cmd = "python " + os.path.normpath(path)
     print(cmd)
     os.system(cmd)
