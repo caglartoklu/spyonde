@@ -265,6 +265,9 @@ def split_to_cells(input_file_name):
         current_cell_tokens = []
         for token in tokens:
 
+            token_str = token.string
+            token_line = token.line
+
             if token.type == 57:
                 # print(list(tokens)[0])
                 # TokenInfo(type=57 (ENCODING), string='utf-8', start=(0, 0), end=(0, 0), line='')
@@ -275,10 +278,6 @@ def split_to_cells(input_file_name):
 
             it_is_cell_separator = False
             if token.type == 55:  # means comment.
-
-                token_str = token.string
-                token_line = token.line
-
                 if is_cell_separator(token_line) and is_cell_separator(token_str):
                     it_is_cell_separator = True
 
@@ -292,20 +291,16 @@ def split_to_cells(input_file_name):
                 all_cell_lines.append(current_cell_lines)
 
                 current_cell_tokens = [token]
-                # TODO: 5 add comment next to cell separator to current_cell_tokens
             else:
                 current_cell_tokens.append(token)
 
-    # print(current_cell_tokens)
-
-    # this block caused an IndexError in Python's untokenize method, so I have left it out:
-    # if current_cell_tokens:
-    #     current_cell_code = untokenize_to_str(tokens_list=current_cell_tokens,
-    #                                           encoding2=detected_encoding)
-    #     current_cell_lines = current_cell_code.split("\n")
-    #     all_cell_lines.append(current_cell_lines)
-
-    # Instead, prepare_temp_file_name() already added a dummy cell to be eaten here.
+        # this block caused an IndexError in Python's untokenize method, so I have left it out:
+        # if current_cell_tokens:
+        #     current_cell_code = untokenize_to_str(tokens_list=current_cell_tokens,
+        #                                           encoding2=detected_encoding)
+        #     current_cell_lines = current_cell_code.split("\n")
+        #     all_cell_lines.append(current_cell_lines)
+        # Instead, prepare_temp_file_name() already added a dummy cell to be eaten here.
 
     try:
         os.remove(temp_input_file_name)
@@ -727,7 +722,9 @@ def prepare_temp_file_name(input_file_name, encoding="utf8"):
     handle.close()
 
     content = content + """
-%## end
+#%% end
+
+# - end.
     """
 
     # string can not be written to NamedTemporaryFile directly,
