@@ -11,6 +11,8 @@ import argparse
 import json
 import os
 import re
+import tempfile
+import tokenize
 
 __TOKEN_CELL_SEPS = ["#%%", "# %%", "# <codecell>"]
 
@@ -22,10 +24,6 @@ __TOKEN_CELL_SEPS = ["#%%", "# %%", "# <codecell>"]
 __CELL_TYPE_MARKDOWN = "markdown"
 __CELL_TYPE_CODE = "code"
 __COMMENT_STARTER = "#"
-
-# The following values will be filled while the program runs.
-__INPUT_FILE_NAME_ONLY = None
-__INPUT_FILE_NAME_FULL = None
 
 
 def starts_with(haystack, needle):
@@ -145,35 +143,6 @@ def answer_in_yes_or_no(message):
     return result
 
 
-def is_adding_first_cell_required(first_line):
-    """
-    Returns True if we need to add a first cell, False otherwise.
-
-    :type first_line: str
-
-    if the content starts with a cell separator, no need to do anything.
-    But, if there is not, we need to encapsulate them in a cell.
-    Outside the first cells, there can be import statements, or encoding declaration.
-    This method returns True if we need to encapsulate those header data in such cell.
-
-    see the variable:
-    __TOKEN_CELL_SEPS
-    """
-    assert isinstance(first_line, str)
-    result = False
-
-    found_sep = False
-    for sep in __TOKEN_CELL_SEPS:
-        if first_line.startswith(sep):
-            found_sep = True
-            break
-
-    if not found_sep:
-        result = True
-
-    return result
-
-
 def is_cell_separator(line2):
     """
     Returns True if the line is a cell separator, False otherwise.
@@ -251,12 +220,19 @@ def is_only_cell_separator(line2):
     return cell_separator_it_is
 
 
-def split_to_cells(content_as_str):
+def clean_cell_lines(cell_lines):
     """
-    Parses content_as_str to list of strings.
-    content_as_str: all the file content as a single string.
+    Removes "\\" characters that has been added with Python's untokenizer.
+    """
+    cell_lines = [x for x in cell_lines if x.strip() != '\\']
+    return cell_lines
 
-    :type content_as_str: list
+
+def split_to_cells(input_file_name):
+    """
+    Tokenizes the contents of input_file_name.
+
+    :type input_file_name: str
 
     Returns a list of strings.
 
@@ -266,43 +242,77 @@ def split_to_cells(content_as_str):
         ['# data files.']
     ]
     """
-    assert isinstance(content_as_str, str)
+    assert isinstance(input_file_name, str)
 
-    content_as_str = content_as_str.strip()
-    cells = []
-
-    input_lines = content_as_str.splitlines()
-
-    # make sure the first line is enveloped in a cell separator.
-    if input_lines:
-        first_line = input_lines[0]
-        required = is_adding_first_cell_required(first_line)
-        if required:
-            # let the file name be written as a comment in the first cell.
-            first_cell_title = __INPUT_FILE_NAME_ONLY
-            input_lines = ["# %% " + first_cell_title + "\n"] + input_lines
-            # TODO: 7 what to do if the first line of the file is encoding?
-            # if it is the first line, does it gets eaten?
-
-    # split to cells.
-    buffer = []
-    for line in input_lines:
-        if not line.strip():
-            # if the line is empty
-            # this case exists to prevent unnecessary calls to is_cell_sep..()
-            buffer.append(line)
-        elif is_cell_separator(line):
-            if buffer:
-                cells.append(buffer)
-            buffer = [line]
+    def untokenize_to_str(tokens_list, encoding2="utf-8"):
+        untokenized = tokenize.untokenize(tokens_list)
+        if isinstance(untokenized, str):
+            result2 = untokenized
+        elif isinstance(untokenized, bytes):
+            result2 = untokenized.decode(encoding2)
         else:
-            buffer.append(line)
+            raise ValueError("unexpected type for tokens_list:", str(type(untokenized)))
+        return result2
 
-    if buffer:
-        # add anything that remains in buffer.
-        cells.append(buffer)
+    all_cell_lines = []
+    detected_encoding = None
 
-    return cells
+    temp_input_file_name = prepare_temp_file_name(input_file_name)
+
+    with open(temp_input_file_name, 'rb') as handle:
+        tokens = tokenize.tokenize(handle.readline)
+
+        current_cell_tokens = []
+        for token in tokens:
+
+            if token.type == 57:
+                # print(list(tokens)[0])
+                # TokenInfo(type=57 (ENCODING), string='utf-8', start=(0, 0), end=(0, 0), line='')
+                if detected_encoding is None:
+                    detected_encoding = token.string
+                else:
+                    raise ValueError("re-encountered an encoding.")
+
+            it_is_cell_separator = False
+            if token.type == 55:  # means comment.
+
+                token_str = token.string
+                token_line = token.line
+
+                if is_cell_separator(token_line) and is_cell_separator(token_str):
+                    it_is_cell_separator = True
+
+            if it_is_cell_separator:
+                current_cell_code = untokenize_to_str(tokens_list=current_cell_tokens,
+                                                      encoding2=detected_encoding)
+                assert isinstance(current_cell_code, str)
+
+                current_cell_lines = current_cell_code.split("\n")
+                current_cell_lines = clean_cell_lines(current_cell_lines)
+                all_cell_lines.append(current_cell_lines)
+
+                current_cell_tokens = [token]
+                # TODO: 5 add comment next to cell separator to current_cell_tokens
+            else:
+                current_cell_tokens.append(token)
+
+    # print(current_cell_tokens)
+
+    # this block caused an IndexError in Python's untokenize method, so I have left it out:
+    # if current_cell_tokens:
+    #     current_cell_code = untokenize_to_str(tokens_list=current_cell_tokens,
+    #                                           encoding2=detected_encoding)
+    #     current_cell_lines = current_cell_code.split("\n")
+    #     all_cell_lines.append(current_cell_lines)
+
+    # Instead, prepare_temp_file_name() already added a dummy cell to be eaten here.
+
+    try:
+        os.remove(temp_input_file_name)
+    except:  # pylint: disable=bare-except
+        print("could not delete temp file:", temp_input_file_name)
+
+    return all_cell_lines
 
 
 def is_comment(needle):
@@ -706,6 +716,31 @@ def generate_output_file_name(input_file_name):
     return output_file_name
 
 
+def prepare_temp_file_name(input_file_name, encoding="utf8"):
+    """
+    Adds a last empty cell to the temp copy of input_file_name and returns it.
+    """
+    assert isinstance(input_file_name, str)
+
+    handle = open(input_file_name, encoding=encoding)
+    content = handle.read()
+    handle.close()
+
+    content = content + """
+%## end
+    """
+
+    # string can not be written to NamedTemporaryFile directly,
+    # so convert it to bytes.
+    content_bytes = content.encode()
+
+    handle = tempfile.NamedTemporaryFile(delete=False)
+    file_name = handle.name
+    handle.write(content_bytes)
+    handle.close()
+    return file_name
+
+
 def convert_file(input_file_name, args_dict):
     """
     Converts a .py file to a .ipynb file.
@@ -729,21 +764,10 @@ def convert_file(input_file_name, args_dict):
     output_file_name = args_dict["output"]
     assert isinstance(output_file_name, str) or output_file_name is None
 
-    global __INPUT_FILE_NAME_FULL  # pylint: disable=global-statement
-    global __INPUT_FILE_NAME_ONLY  # pylint: disable=global-statement
-
-    # fill the following so that it can be used in split_to_cells()
-    __INPUT_FILE_NAME_FULL = input_file_name
-    __INPUT_FILE_NAME_ONLY = os.path.split(input_file_name)[1]
-
     if not output_file_name:
         output_file_name = generate_output_file_name(input_file_name)
 
-    handle = open(input_file_name, "r", encoding="utf8")
-    content_as_str = handle.read()
-    handle.close()
-
-    cells = split_to_cells(content_as_str)
+    cells = split_to_cells(input_file_name)
 
     data = parse_cells(cells)
 
@@ -771,7 +795,7 @@ def convert_file(input_file_name, args_dict):
     if to_be_written:
         # save the output as JSON.
         handle = open(output_file_name, "w", encoding="utf8")
-        content_as_str = handle.write(output_as_str)
+        handle.write(output_as_str)
         handle.close()
         print("created: ", output_file_name)
     else:
