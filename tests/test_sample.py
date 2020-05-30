@@ -79,7 +79,6 @@ class TestStartsWith(unittest.TestCase):
         actual = spyondemain.starts_with(haystack, "#  <codecell>")
         self.assertEqual(expected, actual)
 
-
     def test_is_only_cell_separator(self):
         """
         Tests the is_only_cell_separator() method.
