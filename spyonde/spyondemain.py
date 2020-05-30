@@ -586,6 +586,25 @@ def remove_trailing_empty_elements(list1):
     return list2
 
 
+def is_list_having_non_empty_items(list1):
+    """
+    If the list has items, and if any of them is not empty/None, returns True.
+    Otherwise, False.
+    If the list has no elements, it returns False.
+    If the list has elements but they are empty/None, return False.
+    """
+    result = False
+    if not list1:
+        return result
+
+    found = False
+    for item in list1:
+        if item:
+            found = True
+
+    return found
+
+
 def parse_cells(cells):
     """
     Parses cells and builds a data to be written to a file.
@@ -610,6 +629,10 @@ def parse_cells(cells):
 
     parsed_cells = []
     for cell in cells:
+        if not is_list_having_non_empty_items(cell):
+            # if the cell is empty or has empty elements, ignore it.
+            continue
+
         if cell_ignored(cell):
             continue
         cell_type = detect_cell_type(cell)
@@ -876,13 +899,21 @@ def main_trial():
     The main entry point of this module in development mode.
     """
     module_path = os.path.dirname(os.path.realpath(__file__))
-    input_file_path = os.path.join(module_path, "../")
-    input_file_path = os.path.join(input_file_path, "examples")
-    input_file_name = os.path.join(input_file_path, "demo.py")
+    input_file_dir = os.path.join(module_path, "../")
+    input_file_dir = os.path.join(input_file_dir, "examples")
 
     args_dict = {'output': None, 'pyversion': '3.8', 'overwrite_confirmed': False}
-    args_dict["input"] = input_file_name
 
+    input_file_name = os.path.join(input_file_dir, "demo.py")
+    args_dict["input"] = input_file_name
+    convert_file(input_file_name, args_dict)
+
+    input_file_name = os.path.join(input_file_dir, "simple1.py")
+    args_dict["input"] = input_file_name
+    convert_file(input_file_name, args_dict)
+
+    input_file_name = os.path.join(input_file_dir, "simple2.py")
+    args_dict["input"] = input_file_name
     convert_file(input_file_name, args_dict)
 
 

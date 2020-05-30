@@ -196,8 +196,10 @@ def demo():
     install()
 
     demo1_file = os.path.normpath("examples/demo.py")
+    demo2_file = os.path.normpath("examples/simple1.py")
+    demo3_file = os.path.normpath("examples/simple2.py")
     # demo2_file = os.path.normpath("examples/empty.py")
-    demo_files = [demo1_file]
+    demo_files = [demo1_file, demo2_file, demo3_file]
 
     for file_name in demo_files:
         generated_file_name = file_name + ".gen.ipynb"
