@@ -121,6 +121,12 @@ def clean():
     tests/__pycache__
     README.rst.html
     spyonde.spec
+    examples/.pylint.d
+    examples/__pycache__
+    examples/.ipynb_checkpoints
+    examples/demo.py.gen.ipynb
+    examples/simple1.py.gen.ipynb
+    examples/simple2.py.gen.ipynb
     """
     dirs = _multiline_str_to_list(dirs_as_str)
 
