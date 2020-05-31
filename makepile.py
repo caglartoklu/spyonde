@@ -146,7 +146,7 @@ def pyinstaller():
     r"""
     Makes a Windows executable using PyInstaller.
 
-    Requires PyInstaller to be installed:
+    requires:
     pip install pyinstaller
     """
     readme()
@@ -232,6 +232,9 @@ def test():
 def lint():
     """
     Applies pylint to .py files in this project.
+
+    requires:
+    pip install pylint
     """
     path = "tests/make_lint.py"
     cmd = "python " + os.path.normpath(path)
@@ -242,8 +245,24 @@ def lint():
 def pep8():
     """
     Applies PEP8/pycodestyle to .py files in this project.
+
+    requires:
+    pip install pycodestyle
     """
     path = "tests/make_lint.py pep8"
+    cmd = "python " + os.path.normpath(path)
+    print(cmd)
+    os.system(cmd)
+
+
+def vulture():
+    """
+    Applies vulture to .py files in this project.
+
+    requires:
+    pip install vulture
+    """
+    path = "tests/make_lint.py vulture"
     cmd = "python " + os.path.normpath(path)
     print(cmd)
     os.system(cmd)
@@ -252,6 +271,7 @@ def pep8():
 def linecount():
     r"""
     Counts lines in the project using cloc utility.
+
     Requires:
     https://github.com/AlDanial/cloc
     """
@@ -263,6 +283,7 @@ def linecount():
 def readme():
     r"""
     Converts README.rst to README.rst.html.
+
     Requires:
     https://pypi.org/project/rst2html5/
     """

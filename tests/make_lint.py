@@ -75,20 +75,35 @@ def apply_pep8(file_list):
         os.system(cmd)
 
 
+def apply_vulture(file_list):
+    """
+    Applies vulture to all .py files in the package.
+    """
+    for file_path in file_list:
+        cmd = "vulture " + '"' + file_path + '"'
+        print_separator()
+        print(cmd)
+        os.system(cmd)
+
+
 def main():
     """
     Entry point of the module.
     """
     file_list = get_list_of_py_files()
 
-    pep8_used = False
+    linted = False
     if len(sys.argv) >= 2:
         arg = sys.argv[1]
-        if arg in ["pep8", "pycodestyle"]:
+        if arg in ["pep8", "pycodestyle", ""]:
             apply_pep8(file_list=file_list)
-            pep8_used = True
+            linted = True
+        elif arg == "vulture":
+            apply_vulture(file_list=file_list)
+            linted = True
 
-    if not pep8_used:
+    if not linted:
+        # this is the default.
         apply_pylint(file_list=file_list)
 
 
