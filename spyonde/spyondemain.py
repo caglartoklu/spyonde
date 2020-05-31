@@ -259,6 +259,9 @@ def detect_encoding(token1):
             it_is_encoding_cell = True
     elif "type=59 (ENCODING)" in str(token1):
         it_is_encoding_cell = True
+    elif "type=56 (ENCODING)" in str(token1):
+        # this block if for Python 3.4
+        it_is_encoding_cell = True
 
     if it_is_encoding_cell:
         result = token1.string
@@ -283,6 +286,9 @@ def is_comment_token(token1):
             result = True
     else:
         if "type=57 (COMMENT)" in str(token1):
+            result = True
+        elif "type=54 (COMMENT)" in str(token1):
+            # this block if for Python 3.4
             result = True
 
     return result
