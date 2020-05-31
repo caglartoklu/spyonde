@@ -82,7 +82,7 @@ print(s2)
 # %% Printing Strings (2)
 
 # - since this cell
-# - has an line that is not a comment
+# - has a line that is not a comment
 # - it will be a code cell, not a markdown cell.
 print("told you so.")
 
