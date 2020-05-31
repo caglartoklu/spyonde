@@ -264,8 +264,6 @@ python makepile.py lint
 
 Applies
 `Pylint <https://www.pylint.org/>`_
-and
-`pycodestyle <https://pycodestyle.pycqa.org/en/latest/>`_
 to the files in the package.
 
 Requires:
@@ -273,7 +271,34 @@ Requires:
 ::
 
     pip install pylint
+
+
+python makepile.py pep8
+-----------------------
+
+Applies
+`pycodestyle <https://pycodestyle.pycqa.org/en/latest/>`_
+to the files in the package.
+
+Requires:
+
+::
+
     pip install pycodestyle
+
+
+python makepile.py vulture
+--------------------------
+
+Applies
+`vulture <https://pypi.org/project/vulture/>`_
+to the files in the package.
+
+Requires:
+
+::
+
+    pip install vulture
 
 
 python makepile.py linecount
@@ -306,8 +331,6 @@ To Do
 - ``[x]`` examples directory
 - ``[x]`` running examples from makepile.py: target:demo
 - ``[x]`` add makepile usage to Development section
-- ``[x]`` Test on Python 3.4.4 on Windows XP
-- ``[x]`` Test on Ubuntu 18.04 on Windows (WSL)
 - ``[x]`` screenshots to README.rst
 - ``[x]`` upload to Github
 - ``[ ]`` upload to pypi
