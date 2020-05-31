@@ -127,6 +127,8 @@ def clean():
     examples/demo.py.gen.ipynb
     examples/simple1.py.gen.ipynb
     examples/simple2.py.gen.ipynb
+    examples/empty1.py.gen.ipynb
+    examples/regular1.py.gen.ipynb
     """
     dirs = _multiline_str_to_list(dirs_as_str)
 

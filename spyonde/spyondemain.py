@@ -920,6 +920,14 @@ def main_trial():
     args_dict["input"] = input_file_name
     convert_file(input_file_name, args_dict)
 
+    input_file_name = os.path.join(input_file_dir, "empty1.py")
+    args_dict["input"] = input_file_name
+    convert_file(input_file_name, args_dict)
+
+    input_file_name = os.path.join(input_file_dir, "regular1.py")
+    args_dict["input"] = input_file_name
+    convert_file(input_file_name, args_dict)
+
 
 def start_command_line():
     """
