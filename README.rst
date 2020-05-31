@@ -63,7 +63,7 @@ The screenshot below shows Spyder, but any IDE/editor can be used.
 Be sure to divide your cells using `code cell syntax of Spyder <https://docs.spyder-ide.org/editor.html#defining-code-cells>`_.
 Note that each cell can be run separately by ``ctrl enter`` in Spyder.
 
-.. image:: https://user-images.githubusercontent.com/2071639/81415430-1cd01980-9151-11ea-9795-3eba92d650c7.png
+.. image:: https://user-images.githubusercontent.com/2071639/83352252-ed2cbf80-a352-11ea-90b5-20b42271ced5.png
 
 **Step 2: Run Spyonde by the following command.**
 
