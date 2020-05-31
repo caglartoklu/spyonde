@@ -11,9 +11,7 @@ import argparse
 import json
 import os
 import re
-import sys
 import tempfile
-import token
 import tokenize
 
 __TOKEN_CELL_SEPS = ["#%%", "# %%", "# <codecell>"]
@@ -253,14 +251,14 @@ def detect_encoding(token1):
     result = None
 
     it_is_encoding_cell = False
-    py_version = sys.version_info
-    if py_version.major >= 3 and py_version.minor >= 7:
-        if token1.type == token.ENCODING:
-            it_is_encoding_cell = True
-    elif "type=59 (ENCODING)" in str(token1):
+    if "type=56 (ENCODING)" in str(token1):
+        # Python 3.4.4
         it_is_encoding_cell = True
-    elif "type=56 (ENCODING)" in str(token1):
-        # this block if for Python 3.4
+    elif "type=59 (ENCODING)" in str(token1):
+        # Python 3.6.9
+        it_is_encoding_cell = True
+    elif "type=57 (ENCODING)" in str(token1):
+        # Python 3.7.4
         it_is_encoding_cell = True
 
     if it_is_encoding_cell:
@@ -280,16 +278,15 @@ def is_comment_token(token1):
     assert isinstance(token1, tokenize.TokenInfo)
     result = False
 
-    py_version = sys.version_info
-    if py_version.major >= 3 and py_version.minor >= 7:
-        if token1.type == token.COMMENT:
-            result = True
-    else:
-        if "type=57 (COMMENT)" in str(token1):
-            result = True
-        elif "type=54 (COMMENT)" in str(token1):
-            # this block if for Python 3.4
-            result = True
+    if "type=54 (COMMENT)" in str(token1):
+        # Python 3.4.4
+        result = True
+    elif "type=57 (COMMENT)" in str(token1):
+        # Python 3.6.9
+        result = True
+    elif "type=55 (COMMENT)" in str(token1):
+        # Python 3.7.4
+        result = True
 
     return result
 
@@ -333,7 +330,7 @@ def split_to_cells(input_file_name):
 
         current_cell_tokens = []
         for token1 in tokens:
-
+            
             token_str = token1.string
             token_line = token1.line
 
