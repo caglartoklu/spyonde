@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """
-spyonde
-Create cells in your favorite text editor and Spyonde converts them to Jupyter notebooks.
+Converts cell separated regular Python scripts to Jupyter notebooks.
+With Spyonde, it is possible to use any IDE/editor to create
+    Jupyter notebooks, presenatations and lecture notes.
 """
 
 # pylint: disable=line-too-long
@@ -330,7 +331,7 @@ def split_to_cells(input_file_name):
 
         current_cell_tokens = []
         for token1 in tokens:
-            
+
             token_str = token1.string
             token_line = token1.line
 
