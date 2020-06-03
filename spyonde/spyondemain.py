@@ -285,7 +285,7 @@ def detect_cell_type(cell):
     assert isinstance(cell, list)
     assert isinstance(cell[0], str)
 
-    # empty_line_count = 0
+    empty_line_count = 0
     code_line_count = 0
     comment_line_count = 0
 
@@ -293,8 +293,8 @@ def detect_cell_type(cell):
         stripped_line = line.strip()
         if is_comment(stripped_line):
             comment_line_count += 1
-        # elif not stripped_line:
-        #    empty_line_count += 1
+        elif not stripped_line:
+           empty_line_count += 1
         else:
             code_line_count += 1
 
