@@ -12,7 +12,6 @@ import argparse
 import json
 import os
 import re
-import tempfile
 import tokenize
 
 __TOKEN_CELL_SEPS = ["#%%", "# %%", "# <codecell>"]
@@ -221,18 +220,13 @@ def is_only_cell_separator(line2):
     return cell_separator_it_is
 
 
-def clean_cell_lines(cell_lines):
+def is_comment_token(token1):
     """
-    Removes "\\" characters that has been added with Python's untokenizer.
-    """
-    cell_lines = [x for x in cell_lines if x.strip() != '\\']
-    return cell_lines
+    Returns True if the token1 is a comment token, False otherwise.
+    Since there is an incompatibility between Python versions,
+    this function resolves it.
 
-
-def detect_encoding(token1):
-    """
-    If the token1 is an encoding token, it returns the encoding as a string.
-    Otherwise, it returns None.
+    Some more information about incompatibility:
 
     Python 3.6:
     TokenInfo(type=59 (ENCODING), string='utf-8', start=(0, 0), end=(0, 0), line='')
@@ -243,38 +237,6 @@ def detect_encoding(token1):
     https://docs.python.org/3.7/library/token.html
 
     Changed in version 3.7: Added COMMENT, NL and ENCODING tokens.
-
-    print(sys.version_info)
-    sys.version_info(major=3, minor=7, micro=4, releaselevel='final', serial=0)
-    """
-    assert isinstance(token1, tokenize.TokenInfo)
-
-    result = None
-
-    it_is_encoding_cell = False
-    if "type=56 (ENCODING)" in str(token1):
-        # Python 3.4.4
-        it_is_encoding_cell = True
-    elif "type=59 (ENCODING)" in str(token1):
-        # Python 3.6.9
-        it_is_encoding_cell = True
-    elif "type=57 (ENCODING)" in str(token1):
-        # Python 3.7.4
-        it_is_encoding_cell = True
-
-    if it_is_encoding_cell:
-        result = token1.string
-
-    return result
-
-
-def is_comment_token(token1):
-    """
-    Returns True if the token1 is a comment token, False otherwise.
-    Since there is an incompatibility between Python 3.6 and Python 3.7,
-    this function resolves it.
-    See more about the incompatibility here:
-    detect_encoding()
     """
     assert isinstance(token1, tokenize.TokenInfo)
     result = False
@@ -290,91 +252,6 @@ def is_comment_token(token1):
         result = True
 
     return result
-
-
-def split_to_cells(input_file_name):
-    """
-    Tokenizes the contents of input_file_name.
-
-    :type input_file_name: str
-
-    Token constants:
-    https://docs.python.org/3/library/token.html
-
-    Returns a list of strings.
-
-    [
-        ['# File Read and Write']
-        ['# where are we?', '```python', 'print(os.getcwd())', '```']
-        ['# data files.']
-    ]
-    """
-    assert isinstance(input_file_name, str)
-
-    def untokenize_to_str(tokens_list, encoding2="utf-8"):
-        untokenized = tokenize.untokenize(tokens_list)
-        if isinstance(untokenized, str):
-            result2 = untokenized
-        elif isinstance(untokenized, bytes):
-            result2 = untokenized.decode(encoding2)
-        else:
-            raise ValueError("unexpected type for tokens_list:", str(type(untokenized)))
-        return result2
-
-    all_cell_lines = []
-    detected_encoding = None
-
-    temp_input_file_name = prepare_temp_file_name(input_file_name)
-
-    with open(temp_input_file_name, 'rb') as handle:
-        tokens = tokenize.tokenize(handle.readline)
-
-        current_cell_tokens = []
-        for token1 in tokens:
-
-            token_str = token1.string
-            token_line = token1.line
-
-            detected_encoding_temp = detect_encoding(token1)
-            if detected_encoding_temp:
-                if detected_encoding is None:
-                    detected_encoding = detected_encoding_temp
-                    print("encoding set:", detected_encoding)
-                else:
-                    raise ValueError("re-encountered an encoding.")
-
-            it_is_cell_separator = False
-            if is_comment_token(token1):
-                if is_cell_separator(token_line) and is_cell_separator(token_str):
-                    it_is_cell_separator = True
-
-            if it_is_cell_separator:
-                current_cell_code = untokenize_to_str(tokens_list=current_cell_tokens,
-                                                      encoding2=detected_encoding)
-                assert isinstance(current_cell_code, str)
-
-                current_cell_lines = current_cell_code.split("\n")
-                current_cell_lines = clean_cell_lines(current_cell_lines)
-                all_cell_lines.append(current_cell_lines)
-
-                current_cell_tokens = [token1]
-            else:
-                current_cell_tokens.append(token1)
-
-        # this block caused an IndexError in Python's untokenize method, so I have left it out:
-        # if current_cell_tokens:
-        #     current_cell_code = untokenize_to_str(tokens_list=current_cell_tokens,
-        #                                           encoding2=detected_encoding)
-        #     current_cell_lines = current_cell_code.split("\n")
-        #     all_cell_lines.append(current_cell_lines)
-        # Instead, prepare_temp_file_name() already added a dummy cell to be eaten here.
-
-    try:
-        os.remove(temp_input_file_name)
-    except:  # pylint: disable=bare-except
-        print("could not delete temp file:", temp_input_file_name)
-
-    return all_cell_lines
 
 
 def is_comment(needle):
@@ -408,7 +285,7 @@ def detect_cell_type(cell):
     assert isinstance(cell, list)
     assert isinstance(cell[0], str)
 
-    empty_line_count = 0
+    # empty_line_count = 0
     code_line_count = 0
     comment_line_count = 0
 
@@ -416,8 +293,8 @@ def detect_cell_type(cell):
         stripped_line = line.strip()
         if is_comment(stripped_line):
             comment_line_count += 1
-        elif not stripped_line:
-            empty_line_count += 1
+        # elif not stripped_line:
+        #    empty_line_count += 1
         else:
             code_line_count += 1
 
@@ -609,6 +486,87 @@ def is_list_having_non_empty_items(list1):
     return found
 
 
+def find_in_list(content, token_line, last_number):
+    """
+    Finds an item in a list and returns its index.
+    """
+    token_line = token_line.strip()
+    found = None
+    try:
+        found = content.index(token_line, last_number+1)
+    except ValueError:
+        pass
+    return found
+
+
+def split_to_cells(input_file_name):  # # pylint: disable=R0914
+    """
+    Tokenizes the contents of input_file_name.
+
+    :type input_file_name: str
+
+    Token constants:
+    https://docs.python.org/3/library/token.html
+
+    R0914: too many local variables (max:15)
+
+    Returns a list of strings.
+
+    [
+        ['# File Read and Write']
+        ['# where are we?', '```python', 'print(os.getcwd())', '```']
+        ['# data files.']
+    ]
+    """
+    assert isinstance(input_file_name, str)
+
+    all_cell_lines = []
+
+    separator_line_numbers = []
+    last_number = 0
+
+    # read the file once for line number matching later.
+    handle = open(input_file_name, "r", encoding="utf8")
+    file_content = handle.readlines()
+    handle.close()
+    file_content = [x.rstrip() for x in file_content]
+
+    # this block fills the separator_lines list.
+    with open(input_file_name, 'rb') as handle:
+        tokens = tokenize.tokenize(handle.readline)
+
+        for token1 in tokens:
+            token_str = token1.string
+            token_line = token1.line
+
+            it_is_cell_separator = False
+            if is_comment_token(token1):
+                if is_cell_separator(token_line) and is_cell_separator(token_str):
+                    it_is_cell_separator = True
+
+            if it_is_cell_separator:
+                line_number = find_in_list(file_content, token_line, last_number)
+                if line_number:
+                    last_number = line_number
+                    separator_line_numbers.append(line_number)
+
+    separator_line_numbers = [0] + separator_line_numbers
+    for i, value1 in enumerate(separator_line_numbers[:-1]):
+        start1 = value1
+        stop1 = separator_line_numbers[i+1]
+        lines = file_content[start1:stop1]
+        all_cell_lines.append(lines)
+
+    # last cell.
+    start1 = separator_line_numbers[-1]
+    lines = file_content[start1:]
+    all_cell_lines.append(lines)
+
+    # print(separator_line_numbers)
+
+    return all_cell_lines
+
+
 def parse_cells(cells):
     """
     Parses cells and builds a data to be written to a file.
@@ -626,7 +584,7 @@ def parse_cells(cells):
     """
     assert isinstance(cells, list)
     assert isinstance(cells[0], list)
-    assert isinstance(cells[0][0], str)
+    # assert isinstance(cells[0][0], str)
 
     # TODO: 7 align_comment_cells() call
     # cells = map(align_comment_cells, cells)
@@ -799,33 +757,6 @@ def generate_output_file_name(input_file_name):
     assert isinstance(input_file_name, str)
     output_file_name = input_file_name + ".gen.ipynb"
     return output_file_name
-
-
-def prepare_temp_file_name(input_file_name, encoding="utf8"):
-    """
-    Adds a last empty cell to the temp copy of input_file_name and returns it.
-    """
-    assert isinstance(input_file_name, str)
-
-    handle = open(input_file_name, encoding=encoding)
-    content = handle.read()
-    handle.close()
-
-    content = content + """
-#%% end
-
-# - end.
-    """
-
-    # string can not be written to NamedTemporaryFile directly,
-    # so convert it to bytes.
-    content_bytes = content.encode()
-
-    handle = tempfile.NamedTemporaryFile(delete=False)
-    file_name = handle.name
-    handle.write(content_bytes)
-    handle.close()
-    return file_name
 
 
 def convert_file(input_file_name, args_dict):
