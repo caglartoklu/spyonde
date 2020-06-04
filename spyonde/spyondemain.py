@@ -347,7 +347,7 @@ def prepare_markdown_cell(cell):
                 # if there is anything left, add it as a header.
                 cell2.append("# " + line2)
         else:
-            line2 = remove_if_starts_with(line, __COMMENT_STARTER).strip()
+            line2 = remove_if_starts_with(line, __COMMENT_STARTER).rstrip()
             cell2.append(line2)
 
     return cell2
