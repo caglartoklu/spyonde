@@ -9,7 +9,7 @@ Usage:
     python makepile.py <target>
 
 
-Documenation:
+Documentation:
     The script works with old school python functions.
     Any public function you add becomes a target.
     If you have two functions in the file, named `install()` and `test()`
