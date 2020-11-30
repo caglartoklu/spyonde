@@ -482,6 +482,7 @@ def is_list_having_non_empty_items(list1):
     for item in list1:
         if item:
             found = True
+            break
 
     return found
 
