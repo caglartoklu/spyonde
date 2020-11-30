@@ -250,6 +250,9 @@ def is_comment_token(token1):
     elif "type=55 (COMMENT)" in str(token1):
         # Python 3.7.4
         result = True
+    elif " (COMMENT)" in str(token1):
+        # a generic solution since Python changes it in every version.
+        result = True
 
     return result
 
