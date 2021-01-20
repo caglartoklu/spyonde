@@ -104,6 +104,15 @@ def remove_if_starts_with(haystack, needle):
     return haystack
 
 
+def if_affirmative(needle: str):
+    """
+    Returns True if needle is an affirmative string, False otherwise.
+    """
+    assert isinstance(needle, str)
+    needle = needle.strip().lower()
+    return needle in {"true", "yes", "1", "ok"}
+
+
 def remove_cell_separator_string(haystack):
     """
     Eats values from haystack and returns what is left.
@@ -792,6 +801,18 @@ def convert_file(input_file_name, args_dict):
     cells = split_to_cells(input_file_name)
 
     data = parse_cells(cells)
+    print("Number of cells in file:", len(data))
+    onlymulticell_as_str = args_dict["onlymulticell"]
+    onlymulticell = if_affirmative(onlymulticell_as_str)
+    if onlymulticell:
+        if len(data) < 2:
+            msg = "File has a single cell.\n"
+            msg += "It is probably an ordinary python file.\n"
+            msg += "Since --onlymulticell option is True by default, the file is skipped.\n"
+            msg += "To overwrite this behaviour, run Spyonde as follows:\n"
+            msg += "spyonde yourfile.py --onlymulticell=False\n"
+            print(msg)
+            return None
 
     pyversion = args_dict["pyversion"]
     output_as_str = build_notebook_json(data, pyversion)
@@ -880,6 +901,9 @@ def start_command_line():
     help1 = 'If provided, automatically confirms overwrite. It does not overwrites files by default.'
     parser.add_argument('--overwrite', action='store_true', help=help1)
 
+    help1 = 'Convert only files with multiple cells.'
+    parser.add_argument('--onlymulticell', nargs='?', help=help1, default="True")
+
     args = parser.parse_args()
 
     print("args:")
@@ -890,6 +914,7 @@ def start_command_line():
     args_dict["output"] = None
     args_dict["pyversion"] = args.nbversion
     args_dict["overwrite_confirmed"] = args.overwrite
+    args_dict["onlymulticell"] = args.onlymulticell
 
     for file_name in args.files:
         if os.path.isfile(file_name):
